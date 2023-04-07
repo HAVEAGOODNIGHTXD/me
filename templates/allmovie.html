@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block pagewra %}
+<!--page-wrapper-->
+<div class="page-wrapper">
+    <!--page-content-wrapper-->
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <div class="user-profile-page">
+                <div class="card radius-15">
+                    <div class="card-body">
+                        <div class="row">
+                            {% for i in data %}
+                            <div class="col-lg-3">
+                                <div class="card radius-15">
+                                    <div class="card-body text-center">
+                                        <a  href="movie_data?id={{i.id}}"><img src="{{ i.img }}" width="250" height="320" alt=""/></a>
+                                        <h5 class="mb-0 mt-4 text-white">{{ i.name }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../static/assets/js/jquery.min.js"></script>
+<script src="../static/from/jquery.form.js"></script>
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+{% endblock %}

@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% block pagewra %}
+<div class="page-wrapper">
+    <!--page-content-wrapper-->
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="card radius-15">
+                        <div class="card-body">
+                            <div class="d-flex mb-2">
+                                <div>
+                                    <h2 class="mb-0 text-white">电影评分占比</h2>
+                                </div>
+                            </div>
+                            <div id="chart1" style="height: 400px"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card radius-15">
+                        <div class="card-body">
+                            <div class="d-flex mb-2">
+                                <div>
+                                    <h2 class="mb-0 text-white">情感分析分数占比</h2>
+                                </div>
+                            </div>
+                            <div id="chart2" style="height: 400px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="card radius-15">
+                        <div class="card-body">
+                            <div class="d-flex mb-2">
+                                <div>
+                                    <h2 class="mb-0 text-white">推荐指数占比</h2>
+                                </div>
+                            </div>
+                            <div id="chart4" style="height: 500px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+<script src="../static/assets/js/jquery.min.js"></script>
+<script type="text/javascript">
+    $.ajax({
+        url: "visualization",
+        type: "post",
+        success(e) {
+            data = JSON.parse(e)
+            var chartDom = document.getElementById('chart1');
+            var myChart = echarts.init(chartDom);
+            var option;
+            option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b} : {c}'
+                },
+                series: [
+                    {
+                        name: '数量',
+                        type: 'funnel',
+                        left: '10%',
+                        top: 60,
+                        bottom: 60,
+                        width: '80%',
+                        min: 0,
+                        max: 150,
+                        minSize: '0%',
+                        maxSize: '100%',
+                        sort: 'descending',
+                        gap: 2,
+                        label: {
+                            show: true,
+                            position: 'inside'
+                        },
+                        labelLine: {
+                            length: 10,
+                            lineStyle: {
+                                width: 1,
+                                type: 'solid'
+                            }
+                        },
+                        itemStyle: {
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            label: {
+                                fontSize: 20
+                            }
+                        },
+                        data: data[0]
+                    }
+                ]
+            };
+            option && myChart.setOption(option);
+
+            var chartDom1 = document.getElementById('chart2');
+            var myChart1 = echarts.init(chartDom1);
+            var option1;
+
+            option1 = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b} : {c} ({d}%)'
+                },
+                legend: {
+                    top: 'bottom',
+                    textStyle: {
+                        color: "#fff"
+                    }
+                },
+                series: [
+                    {
+                        name: '情感分析',
+                        type: 'pie',
+                        radius: [20, 150],
+                        center: ['50%', '50%'],
+                        roseType: 'area',
+                        itemStyle: {
+                            borderRadius: 8
+                        },
+                        data: data[1]
+                    }
+                ]
+            };
+
+            option1 && myChart1.setOption(option1);
+
+
+            var chartDom2 = document.getElementById('chart4');
+            var myChart2 = echarts.init(chartDom2);
+            var option2;
+
+            option2 = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    textStyle:{
+                        color:"#fff"
+                    }},
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    boundaryGap: [0, 0.01],
+                    axisLabel:{
+                        textStyle: {
+                            color:"#fff"
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: data[2][0],
+                    axisLabel:{
+                        textStyle: {
+                            color:"#fff"
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '评价数量',
+                        type: 'bar',
+                        data: data[2][1]
+                    }
+                ]
+            };
+
+            option2 && myChart2.setOption(option2);
+        }
+    })
+    var data = {
+        'year': 2000
+    }
+    $.ajax({
+        url: 'getnewdata',
+        type: 'post',
+        data: {'data': JSON.stringify(data)},
+        success(e) {
+            var myChart3 = echarts.init(document.getElementById('chart3'));
+            var option3 = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['客流量']
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        // prettier-ignore
+                        data: e.bardata,
+                        axisLabel: {
+                            color: "#fff"
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        axisLabel: {
+                            color: "#fff"
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '客流量',
+                        type: 'bar',
+                        data: e.newdata,
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: 'Max'},
+                                {type: 'min', name: 'Min'}
+                            ]
+                        },
+                        markLine: {
+                            data: [{type: 'average', name: 'Avg'}]
+                        }
+                    }
+                ]
+            };
+            myChart3.setOption(option3);
+        }
+    })
+
+    function getnewdata() {
+        var year = document.getElementById('sel').value
+        var data = {
+            'year': year
+        }
+        $.ajax({
+            url: 'getnewdata',
+            type: 'post',
+            data: {'data': JSON.stringify(data)},
+            success(e) {
+                var myChart3 = echarts.init(document.getElementById('chart3'));
+                var option3 = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['客流量']
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            // prettier-ignore
+                            data: e.bardata,
+                            axisLabel: {
+                                color: "#fff"
+                            }
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisLabel: {
+                                color: "#fff"
+                            }
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '客流量',
+                            type: 'bar',
+                            data: e.newdata,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: 'Max'},
+                                    {type: 'min', name: 'Min'}
+                                ]
+                            },
+                            markLine: {
+                                data: [{type: 'average', name: 'Avg'}]
+                            }
+                        }
+                    ]
+                };
+                myChart3.setOption(option3);
+            }
+        })
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% block pagewra %}
+<!--page-wrapper-->
+<div class="page-wrapper">
+    <!--page-content-wrapper-->
+    <div class="page-content-wrapper">
+        <div class="page-content">
+                <div class="user-profile-page">
+                    <div class="card radius-15">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-lg-7 border-right">
+                                    <div class="d-md-flex align-items-center">
+                                        <div class="mb-md-0 mb-3">
+                                            <img src="{{ data0.img }}" width="250"
+                                                 height="350" alt=""/>
+                                        </div>
+                                        <div class="ml-md-4 flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <h4 class="mb-0">{{ data0.name }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-5">
+                                    <table class="table table-sm table-borderless mt-md-0 mt-3">
+                                        <tbody>
+                                        <tr>
+                                            <th>简介:</th>
+                                            <td>{{ data0.detail }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>排名:</th>
+                                            <td>{{ data0.rank }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>评分:</th>
+                                            <td>{{ data0.score }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="card radius-15">
+                            <div class="card-body">
+                                <div class="d-flex mb-2">
+                                    <div>
+                                        <h2 class="mb-0 text-white" style="font-size: 20px">情感得分</h2>
+                                    </div>
+                                </div>
+                                <div id="chart1" style="height: 400px"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card radius-15">
+                            <div class="card-body">
+                                <div class="d-flex mb-2">
+                                    <div>
+                                        <h2 class="mb-0 text-white" style="font-size: 20px">用户评价</h2>
+                                    </div>
+                                </div>
+                                <div id="chart2" style="height: 400px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="card radius-15">
+                            <div class="card-body">
+                                <div class="d-flex mb-2">
+                                    <div>
+                                        <h2 class="mb-0 text-white" style="font-size: 20px">主题词汇及出现次数</h2>
+                                    </div>
+                                </div>
+                                <div id="chart3" style="height: 400px"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <div class="card radius-15">
+                            <div class="card-body">
+                                <div class="d-flex mb-2">
+                                    <div>
+                                        <h2 class="mb-0 text-white" style="font-size: 20px">评论词云图</h2>
+                                    </div>
+                                </div>
+                                <div style="height: 400px"><img src="../static/images/result.png?id=" +{{data0.id}}
+                                                                style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <ul class="nav nav-pills">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab"
+                                                href="#Experience"><span class="p-tab-name">热门评论</span><i
+                                class='bx bx-donate-blood font-24 d-sm-none'></i></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3">
+                        <div class="tab-pane fade show active" id="Experience">
+                            <div class="card shadow-none border mb-0 radius-15">
+                                <div class="card-body">
+                                    {% for i in data1 %}
+                                    <div class="media">
+                                        <div class="media-body ml-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-4">
+                                                    <h5 class="mb-0">情感得分:{{ i.NLP }}</h5>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <h5 class="mb-0">评价:{{ i.score }}</h5>
+                                                </div>
+                                            </div>
+                                            <p class="mt-2">{{ i.text }}</p>
+                                            <hr/>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<script src="../static/assets/js/jquery.min.js"></script>
+<script src="../static/from/jquery.form.js"></script>
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+<script>
+    var id = {{data0.id}};
+    $.ajax({
+        url: "getnlp?id=" + id,
+        type: "get",
+        success(e) {
+            data = JSON.parse(e)
+            var myChart = echarts.init(document.getElementById('chart1'));
+            var option;
+            option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        textStyle: {
+                            color: "#fff"
+                        }
+                    }
+                },
+                series: [
+                    {
+                        data: data,
+                        type: 'line',
+                        areaStyle: {}
+                    }
+                ]
+            };
+            option && myChart.setOption(option);
+        }
+    })
+    $.ajax({
+        url: "getscore?id=" + id,
+        type: "get",
+        success(e) {
+            data = JSON.parse(e)
+            var myChart = echarts.init(document.getElementById('chart2'));
+            var option;
+
+            option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center',
+                    textStyle: {
+                        color: "#fff"
+
+                    }
+                },
+                series: [
+                    {
+                        name: '评价',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 40,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: data
+                    }
+                ]
+            };
+            option && myChart.setOption(option);
+
+        }
+    })
+    $.ajax({
+        url: "getLDA?id=" + id,
+        type: "get",
+        success(e) {
+            data = JSON.parse(e)
+            var chartDom = document.getElementById('chart3');
+            var myChart = echarts.init(chartDom);
+            var option;
+
+            option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: data[0],
+                    axisLabel: {
+                        textStyle:{
+                            color:"#fff"
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        textStyle:{
+                            color:"#fff"
+                        }
+                    }
+                },
+                series: [
+                    {
+                        data: data[1],
+                        type: 'bar'
+                    }
+                ]
+            };
+
+            option && myChart.setOption(option);
+
+        }
+    })
+</script>
+{% endblock %}
